@@ -9,6 +9,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    # ADD THIS PERMISSIONS BLOCK HERE!
+    permissions:
+      id-token: write # Required for Workload Identity Federation to obtain the OIDC token
+      contents: read  # Required to checkout the repository code
+
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -22,12 +27,12 @@ jobs:
 
     # Cache Node Modules for webapp
     - name: Cache Node Modules
-      uses: actions/cache@v4 # Use the generic caching action
+      uses: actions/cache@v4
       with:
-        path: webapp/node_modules # Directory to cache
-        key: ${{ runner.os }}-node-${{ hashFiles('webapp/package-lock.json') }} # Key based on OS and lock file hash
+        path: webapp/node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('webapp/package-lock.json') }}
         restore-keys: |
-          ${{ runner.os }}-node- # Fallback if specific lock file hash not found
+          ${{ runner.os }}-node-
 
     - name: Install Webapp Dependencies
       run: cd webapp && npm install
