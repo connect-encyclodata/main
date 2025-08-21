@@ -1,0 +1,12 @@
+specVersion: "v1"
+serviceId: "B2BPIM"
+location: "asia-east1"
+schema:
+  source: "./schema"
+  datasource:
+    postgresql:
+      database: "postgres"
+      cloudSql:
+        instanceId: "b2bpim-fdc"
+      # schemaValidation: "COMPATIBLE"
+connectorDirs: ["./connector"]
