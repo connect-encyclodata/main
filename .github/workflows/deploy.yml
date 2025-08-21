@@ -1,0 +1,53 @@
+name: Deploy to Firebase App Hosting
+
+on:
+  push:
+    branches:
+      - main # <<< IMPORTANT: Ensure this matches your default branch (e.g., 'main' or 'master')
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22' # Or '22' if you upgraded Node.js to 22.x.x
+        cache: 'npm' # Caches npm dependencies to speed up builds
+
+    - name: Install Dependencies
+      # This step assumes your web app has its own package.json and needs dependencies installed
+      # If your web app lives in a sub-directory, adjust 'run:' accordingly
+      run: npm install
+
+    - name: Build Web Application
+      # This step runs your web app's build command
+      # Adjust 'run:' to your actual build command (e.g., 'npm run build', 'yarn build', 'ng build --configuration=production')
+      run: npm run build
+
+    - name: Install Firebase CLI
+      run: npm install -g firebase-tools
+
+    - name: Authenticate to Google Cloud
+      id: 'auth'
+      uses: 'google-github-actions/auth@v2'
+      with:
+        # REPLACE THIS with YOUR Workload Identity Provider ARN
+        # Format: projects/<PROJECT_NUMBER>/locations/global/workloadIdentityPools/<POOL_ID>/providers/<PROVIDER_ID>
+        # Example (YOUR details below): 'projects/641713712205/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider'
+        workload_identity_provider: 'projects/641713712205/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider'
+        
+        # REPLACE THIS with YOUR Service Account Email
+        # Example (YOUR details below): 'github-action-1042088109@pim-and-order-management.iam.gserviceaccount.com'
+        service_account: 'github-action-1042088109@pim-and-order-management.iam.gserviceaccount.com'
+
+    - name: Deploy to Firebase App Hosting
+      # This command deploys only the App Hosting configured in firebase.json
+      run: firebase deploy --only apphosting
+      env:
+        # REPLACE THIS with YOUR Firebase Project ID
+        FIREBASE_PROJECT: 'pim-and-order-management'
