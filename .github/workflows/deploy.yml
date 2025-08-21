@@ -9,10 +9,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    # ADD THIS PERMISSIONS BLOCK HERE!
     permissions:
-      id-token: write # Required for Workload Identity Federation to obtain the OIDC token
-      contents: read  # Required to checkout the repository code
+      id-token: write
+      contents: read
 
     steps:
     - name: Checkout Repository
@@ -21,11 +20,9 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '22' # Or '22'
-        # No 'cache: npm' here anymore directly
-        # We will use actions/cache explicitly below
+        node-version: '20' # Or '22'
+        cache-dependency-path: webapp/package-lock.json
 
-    # Cache Node Modules for webapp
     - name: Cache Node Modules
       uses: actions/cache@v4
       with:
@@ -51,6 +48,7 @@ jobs:
         service_account: 'github-action-1042088109@pim-and-order-management.iam.gserviceaccount.com'
 
     - name: Deploy to Firebase App Hosting
-      run: firebase deploy --only apphosting
+      # ADD THE --project FLAG HERE!
+      run: firebase deploy --only apphosting --project pim-and-order-management # <<< ADDED --project
       env:
-        FIREBASE_PROJECT: pim-and-order-management
+        FIREBASE_PROJECT: pim-and-order-management # This env var is good, but the --project flag is more direct for deploy command
