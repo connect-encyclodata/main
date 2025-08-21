@@ -18,9 +18,9 @@ jobs:
       with:
         node-version: '22' # Or '22'
         cache: 'npm'
-        cache-dependency-path: webapp/package-lock.json # <<< ADD THIS LINE!
-                                                         # Or webapp/yarn.lock if you're using Yarn
-
+        cache-dependency-path: webapp/package-lock.json 
+        working-directory: webapp
+        
     - name: Install Webapp Dependencies
       run: cd webapp && npm install
 
