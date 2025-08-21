@@ -1,0 +1,51 @@
+name: Deploy to Firebase App Hosting
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22' # Or '22'
+        # No 'cache: npm' here anymore directly
+        # We will use actions/cache explicitly below
+
+    # Cache Node Modules for webapp
+    - name: Cache Node Modules
+      uses: actions/cache@v4 # Use the generic caching action
+      with:
+        path: webapp/node_modules # Directory to cache
+        key: ${{ runner.os }}-node-${{ hashFiles('webapp/package-lock.json') }} # Key based on OS and lock file hash
+        restore-keys: |
+          ${{ runner.os }}-node- # Fallback if specific lock file hash not found
+
+    - name: Install Webapp Dependencies
+      run: cd webapp && npm install
+
+    - name: Build Web Application
+      run: cd webapp && npm run build
+
+    - name: Install Firebase CLI
+      run: npm install -g firebase-tools
+
+    - name: Authenticate to Google Cloud
+      id: 'auth'
+      uses: 'google-github-actions/auth@v2'
+      with:
+        workload_identity_provider: 'projects/641713712205/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider'
+        service_account: 'github-action-1042088109@pim-and-order-management.iam.gserviceaccount.com'
+
+    - name: Deploy to Firebase App Hosting
+      run: firebase deploy --only apphosting
+      env:
+        FIREBASE_PROJECT: pim-and-order-management
