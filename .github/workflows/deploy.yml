@@ -19,16 +19,12 @@ jobs:
         node-version: '22' # Or '22' if you upgraded Node.js to 22.x.x
         cache: 'npm' # Caches npm dependencies to speed up builds
 
-    - name: Install Dependencies
-      # This step assumes your web app has its own package.json and needs dependencies installed
-      # If your web app lives in a sub-directory, adjust 'run:' accordingly
-      run: npm install
-
+    - name: Install Webapp Dependencies
+      run: cd webapp && npm install
+      
     - name: Build Web Application
-      # This step runs your web app's build command
-      # Adjust 'run:' to your actual build command (e.g., 'npm run build', 'yarn build', 'ng build --configuration=production')
-      run: npm run build
-
+      run: cd webapp && npm run build 
+      
     - name: Install Firebase CLI
       run: npm install -g firebase-tools
 
@@ -50,4 +46,4 @@ jobs:
       run: firebase deploy --only apphosting
       env:
         # REPLACE THIS with YOUR Firebase Project ID
-        FIREBASE_PROJECT: 'pim-and-order-management'
+        FIREBASE_PROJECT: pim-and-order-management
